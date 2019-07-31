@@ -193,7 +193,19 @@ def match_with_gaps(my_word, other_word):
         _ , and my_word and other_word are of the same length;
         False otherwise:
     '''
-    if len(my_word) == len(other_word):
+    my_word = "".join(my_word)
+    stripped = my_word.replace(" ","")
+    letters_my_word = list(stripped)
+
+
+    if len(other_word) == len(stripped):
+        for i in range(len(stripped)):
+            if stripped[i] == other_word[i]:
+               continue
+            elif  stripped[i] == "_" and other_word[i] not in letters_my_word:
+               continue
+            else:
+               return False
         return True
     else:
         return False
@@ -210,14 +222,17 @@ def show_possible_matches(my_word):
              that has already been revealed.
 
     '''
+    matches = ""
     for other_word in wordlist:
-        if (match_with_gaps(my_word, other_word) == True):
-            myword = "".join(my_word)
-            if myword in other_word:
-                print(other_word)
+        if match_with_gaps(my_word, other_word):
+            matches += (other_word + " ")
+        else:
+            continue
 
-
-    return 0
+    if matches == "":
+        print("No matches found")
+    else:
+        print(matches)
 
 
 def hangman_with_hints(secret_word):
@@ -254,21 +269,15 @@ def hangman_with_hints(secret_word):
 
     while (is_word_guessed(secret_word, letters_guessed) == False):
 
-        my_word = ""
-
         # Ask user for guess and check if it's a letter or *
         guess = input("Pick a letter: ")
         if guess == "*":
-            print(show_possible_matches(my_word))
+            print(show_possible_matches(get_guessed_word(secret_word, letters_guessed)))
 
         while guess not in ascii_letters:
             guess = input("Pick a letter: ")
 
-
         letters_guessed.append(guess)
-
-        if guess in secret_word:
-            my_word.append(guess)
 
         # Display partially guessed word
         my_word = get_guessed_word(secret_word, letters_guessed)
